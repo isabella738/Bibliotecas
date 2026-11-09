@@ -1,13 +1,11 @@
 #ifndef TEXT_EDIT
 #define TEXT_EDIT
 
-#define NEGRITO "\033[1m"
-#define TRANSLUCIDO "\033[2m"
-#define ITALICO "\033[3m"
-#define SUBLINHADO "\033[4m"
-#define FUNDO_BRANCO "\033[7m"
-#define RASURADO "\033[8m"
-#define SUB_DUPLO "\033[21m"
+#define BOLD "\033[1m"
+#define ITALIC "\033[3m"
+#define UNDERLINED "\033[4m"
+#define CROSSEDOUT "\033[8m"
+#define DOUBLE_UNDRLN "\033[21m"
 
 #define GRAY "\033[90m"
 #define RED "\033[91m"
@@ -28,25 +26,8 @@
 
 #define RESET  "\033[0m"
 
-const char color[][10] = {
-    GRAY,
-    RED,
-    GREEN,
-    YELLOW,
-    BLUE,
-    MAGENTA,
-    CYAN,
-    WHITE
-};
+extern const char colors[][10];
 
-const char background[][10] = {
-    BG_RED,
-    BG_GREEN,
-    BG_YELLOW,
-    BG_BLUE,
-    BG_MAGENTA,
-    BG_CYAN,
-    BG_WHITE
-};
+extern const char background[][10];
 
 #endif

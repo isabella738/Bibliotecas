@@ -4,9 +4,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+
 //others
 
-void quick_sort(Inventory *vector, const char key[], int beggining, int end){
+void quick_sort(Item *vector, const char key[], int beggining, int end){
     if(beggining >= end) return;
 
     int p = beggining, i = end;
@@ -20,7 +21,7 @@ void quick_sort(Inventory *vector, const char key[], int beggining, int end){
 
         if(way == -1){
             if(cmp > 0){
-                Inventory temp = vector[p];
+                Item temp = vector[p];
                 vector[p] = vector[i];
                 vector[i] = temp;
 
@@ -33,7 +34,7 @@ void quick_sort(Inventory *vector, const char key[], int beggining, int end){
         }
         else{
             if(cmp < 0){
-                Inventory temp = vector[p];
+                Item temp = vector[p];
                 vector[p] = vector[i];
                 vector[i] = temp;
 
@@ -95,7 +96,7 @@ void define_char_type(Map m[][LENGHT], const char c, int type){
                 m[i][j].type = type;
 }
 
-// mob functions
+// mob functions general
 
 int invert(int direction){
     if(direction < 2) return direction += 2;
@@ -129,6 +130,8 @@ int is_alive(int health){
 void add_score(int *score, int points){
     (*score) += points;
 }
+
+// mob functions point/large
 
 int can_move_point(coordinate p, Map m[][LENGHT]){
     return (is_inside_map(p) && !is_barrier(p, m));
@@ -229,9 +232,28 @@ int append_mob_large(Large_Mob **mob, Large_Mob new_mob, int *max){
     return 0;
 }
 
+int mobs_collide(Point_Mob mob, Point_Mob *mobs, int max){
+    for(int i=0; i<max; i++){
+        if(equal(mob.p, mobs[i].p)) return 1;
+    }
+    return 0;
+}
+
+int mobs_collide(Large_Mob mob, Large_Mob *mobs, int max){
+    for(int i=0; i<max; i++){
+        if(matrix_collision(
+            mob.r, mobs[i].r, 
+            mob.matrix, 
+            mobs[i].matrix
+        )) 
+        return 1;
+    }
+    return 0;
+}
+
 //inventory
 
-void pop_item(Inventory *item, int x, int *max){
+void pop_item(Item *item, int x, int *max){
     if(x < 0 || x >= (*max)) return;
 
     for(int i=x; i<(*max); i++)
@@ -239,8 +261,8 @@ void pop_item(Inventory *item, int x, int *max){
     (*max)--;
 }
 
-int allocate_inventory(Inventory **inventory, int size){
-    Inventory *new_inventory = realloc(*inventory, sizeof(Inventory)*size);
+int allocate_inventory(Item **inventory, int size){
+    Item *new_inventory = realloc(*inventory, sizeof(Item)*size);
     if(new_inventory != NULL){
         *inventory = new_inventory;
         return 1;
@@ -248,7 +270,7 @@ int allocate_inventory(Inventory **inventory, int size){
     return 0;
 }
 
-int append_item(Inventory **inventory, Inventory new_item, int *max){
+int append_item(Item **inventory, Item new_item, int *max){
     for(int i=0; i<(*max); i++){
         if(strcmp(new_item.name, (*inventory)[i].name) == 0){
             (*inventory)[i].amount += new_item.amount;
@@ -271,10 +293,10 @@ int append_item(Inventory **inventory, Inventory new_item, int *max){
     return 1;
 }
 
-Inventory *sorted_inventory(Inventory *inventory, const char key[], int max){
+Item *sorted_inventory(Item *inventory, const char key[], int max){
     if(max <= 0) return NULL;
 
-    Inventory *new_inventory = malloc(sizeof(Inventory)*max);
+    Item *new_inventory = malloc(sizeof(Item)*max);
 
     if(new_inventory == NULL) return NULL;
 

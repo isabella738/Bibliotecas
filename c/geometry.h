@@ -10,18 +10,18 @@ typedef struct{
     int hgt, len;
 }rectangle;
 
-coordinate direction[] = {
-    {-1, 0},
-    {0, 1},
-    {1, 0},
-    {0, -1}
-};
+#define max(a, b) ((a) > (b) ? (a) : (b))
+#define min(a, b) ((a) < (b) ? (a) : (b))
+
+extern coordinate direction[];
 
 // mathematics
 
 int average(int a, int b);
 
-// coordinates
+/*
+    coordinates
+*/
 
 //sum each coordinate element
 coordinate sum(coordinate a, coordinate b);
@@ -47,7 +47,9 @@ int equal(coordinate a, coordinate b);
 int manhattan_distance(coordinate a, coordinate b);
 double distance(coordinate a, coordinate b);
 
-//rectangles
+/*
+    rectangles
+*/
 
 //returns absolute coordinate of p regarding the rectangle position
 coordinate abs_coordinate(rectangle r, coordinate p);
@@ -75,52 +77,60 @@ int rectangle_area(rectangle r);
 //returns 1 if a contains b
 int rectangle_contains(rectangle a, rectangle b);
 
-// matrix
+//calculate points of intersection between a and b
+int interssection(rectangle a, rectangle b, coordinate *p1, coordinate *p2);
 
-int point_in_matrix_int(coordinate p, rectangle m, int matrix[][m.len]);
-int point_in_matrix_char(coordinate p, rectangle m, char matrix[][m.len]);
-int matrix_collision_int(rectangle a, rectangle b, int mA[][a.len], int mB[][b.len]);
-int matrix_collision_char(rectangle a, rectangle b, char mA[][a.len], char mB[][b.len]);
-void rotate_matrix_int(int hgt, int len, int m[][len]);
-void rotate_matrix_char(int hgt, int len, char m[][len]);
-void flip_matrix_int(int hgt, int len, int m[][len]);
-void flip_matrix_char(int hgt, int len, char m[][len]);
-void upside_down_matrix_int(int hgt, int len, int m[][len]);
-void upside_down_matrix_char(int hgt, int len, char m[][len]);
+//calculate rectangle of sobreposition of a and b
+int sobreposition(rectangle a, rectangle b, rectangle *new);
+
+/*
+    matrices
+*/
 
 //returns 1 if p is a significant matrix element
 #define point_in_matrix(p, m, matrix) \
     _Generic((matrix), \
-        int (*)[(m).len]: point_in_matrix_int, \
-        char (*)[(m).len]: point_in_matrix_char \
+        int **: point_in_matrix_int, \
+        char **: point_in_matrix_char \
     )(p, m, matrix)
 
 //returns 1 if any significant element of mA overlap any significant element of mB
 #define matrix_collision(a, b, mA, mB) \
     _Generic((mA), \
-        int (*)[(a).len]: matrix_collision_int, \
-        char (*)[(a).len]: matrix_collision_char \
+        int **: matrix_collision_int, \
+        char **: matrix_collision_char \
     )(a, b, mA, mB)
 
 //rotates matrix 90 degrees clockwise
 #define rotate_matrix(hgt, len, m) \
     _Generic((m), \
-        int (*)[len]: rotate_matrix_int, \
-        char (*)[len]: rotate_matrix_char \
+        int **: rotate_matrix_int, \
+        char **: rotate_matrix_char \
     )(hgt, len, m)
 
 //flips m horizontally
 #define flip_matrix(hgt, len, m) \
     _Generic((m), \
-        int (*)[len]: flip_matrix_int, \
-        char (*)[len]: flip_matrix_char \
+        int **: flip_matrix_int, \
+        char **: flip_matrix_char \
     )(hgt, len, m)
 
 //flips m vertically
 #define upside_down_matrix(hgt, len, m) \
     _Generic((m), \
-        int (*)[len]: upside_down_matrix_int, \
-        char (*)[len]: upside_down_matrix_char \
+        int **: upside_down_matrix_int, \
+        char **: upside_down_matrix_char \
     )(hgt, len, m)
+
+int point_in_matrix_int(coordinate p, rectangle m, int **matrix);
+int point_in_matrix_char(coordinate p, rectangle m, char **matrix);
+int matrix_collision_int(rectangle a, rectangle b, int **mA, int **mB);
+int matrix_collision_char(rectangle a, rectangle b, char **mA, char **mB);
+int **rotate_matrix_int(int *hgt, int *len, int **m);
+char **rotate_matrix_char(int *hgt, int *len, char **m);
+void flip_matrix_int(int hgt, int len, int **m);
+void flip_matrix_char(int hgt, int len, char **m);
+void upside_down_matrix_int(int hgt, int len, int **m);
+void upside_down_matrix_char(int hgt, int len, char **m);
 
 #endif
