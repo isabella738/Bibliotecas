@@ -1,5 +1,5 @@
 /*
-    Depends of: geometry.hpp
+    Depends of: geometry.hpp and text_edit.h
 
     Cell has information of a single cell of the map.
 
@@ -358,4 +358,9 @@ class Mob {
                 std::cout << '\n';
             }
         }
+
+        int show_health(){
+            return health;
+        }
+
 };
