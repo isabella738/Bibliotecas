@@ -18,7 +18,9 @@
 
     Mob has an inventory and mob functions. It has an string vector (the mob "drawing") and a int
     vector, which designs the color for each drawing cell
+
 */
+
 
 #include "geometry.hpp"
 #include "text_edit.h"
@@ -30,6 +32,14 @@
 #define RIGHT 1
 #define DOWN 2
 #define LEFT 3
+
+#define ESC "\033["
+#define STANDARD std::cout << ESC << 'H'
+#define MOVE_TO(y, x) std::cout << ESC << y << ';' << x << 'H'
+#define MOVE_UP(x) std::cout << ESC << (x) << 'A' 
+#define MOVE_DOWN(x) std::cout << ESC << (x) << 'B' 
+#define MOVE_RIGHT(x) std::cout << ESC << (x) << 'C' 
+#define MOVE_LEFT(x) std::cout << ESC << (x) << 'D' 
 
 struct Cell {
     char c;
@@ -281,7 +291,7 @@ class Inventory {
 class Mob {
     private:
         Matrix<std::string> form;
-        std::vector<std::vector<int>> color; //each number is a color for its coordinate
+        Matrix<std::vector<int>> color; //each number is a color for its coordinate
         int health;
         int max_health;
         int mode;
@@ -308,15 +318,52 @@ class Mob {
     public:
         Inventory inventory;
 
-        bool set_colors(std::vector<std::vector<int>> c){
-            if(c.size() != form.r.hgt) return 0;
-            for(int i=0; i<c.size(); i++){
-                if(c[i].size() != form.r.len) return 0;
+        bool set_mob(
+            Matrix<std::string> f,
+            Matrix<std::vector<int>> c,
+            int max_hlth_new,
+            int walkcd_new
+        ){
 
-                for(int j=0; j<c[i].size(); j++)
-                    color[i][j] = c[i][j];
-            }
+            set_form(f);
+            if (!set_colors(c)) return 0;
+            if (!improve_health(max_hlth_new)) return 0;
+            if (!set_cd(walkcd_new)) return 0;
+
+            walk_cd = walk_cd_original;
+            health = max_health;
+            d = 0; mode = 0;
+
             return 1;
+        }
+
+        void set_form(Matrix<std::string> v){
+            form = v;
+        }
+
+        bool set_colors(Matrix<std::vector<int>> v){
+            if(v.r.hgt != form.r.hgt || v.r.len != form.r.len) return 0;
+            color = v;
+            return 1;
+        }
+
+        bool improve_health(int new_health){
+            if(new_health <= 0) return 0;
+            max_health = new_health;
+            return 1;
+        }
+
+        bool set_cd(int cd1){
+            if(cd1 <= 0) return 0;
+            walk_cd_original = cd1;
+        }
+
+        rectangle show_proportions(){
+            return form.r;
+        }
+
+        int show_health(){
+            return health;
         }
 
         bool can_move(Map m){
@@ -336,8 +383,10 @@ class Mob {
             return 0;
         }
 
-        void set_direction(int i){
-            d = i;
+        void set_direction(){
+            /*
+                some direction algorithm that makes sense with your game
+            */
         }
 
         void heal(int hp){
@@ -351,16 +400,14 @@ class Mob {
         }
 
         void print(){
-            for(int i=0; i<form.r.hgt; i++){
-                for(int j=0; j<form.r.len; j++){
-                    std::cout << colors[color[i][j]] << form.m[i][j] << RESET;
-                }
-                std::cout << '\n';
-            }
-        }
 
-        int show_health(){
-            return health;
+            for(int i=0; i<form.r.hgt; i++){
+                MOVE_TO(form.r.p.y + i + 1, form.r.p.x + 1);
+
+                for(int j=0; j<form.r.len; j++){
+                    std::cout << colors[color.m[i][j]] << form.m[i][j] << RESET;
+                }
+            }
         }
 
 };
